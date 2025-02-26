@@ -48,8 +48,8 @@ except Exception as e:
 # รายชื่อสำเนียงที่โมเดลสามารถทำนายได้
 class_names = [
     "Arabic", "Dutch", "English", "French", "German",
-    "Italian", "Korean", "Mandarin", "Polish", "Portuguese",
-    "Russian", "Spanish", "Turkish"
+    "Italian", "Korean", "Mandarin", "Japanese", 
+    "Russian", "Spanish", "Hindi", "Thai"
 ]
 
 def convert_audio_to_wav(input_path, output_path=None):
