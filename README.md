@@ -1,8 +1,4 @@
 # Speech_Accent_Detection
-# Ujhin - Speech Accent Detection
-
-![Ujhin Logo](./assets/logo.png)
-
 Ujhin เป็นแอพพลิเคชันที่ใช้ปัญญาประดิษฐ์ในการระบุสำเนียงภาษาจากไฟล์เสียงพูด โดยรองรับการทำนาย 13 สำเนียงภาษาต่างๆ จากทั่วโลก
 
 ## คุณสมบัติ
