@@ -29,8 +29,8 @@ Ujhin เป็นแอพพลิเคชันที่ใช้ปัญ�
 
 1. โคลนโปรเจคนี้:
    ```bash
-   git clone https://github.com/yourusername/ujhin-accent-detection.git
-   cd ujhin-accent-detection
+   git clone https://github.com/UJhinN/Speech_Accent_Detection.git
+   cd Speech_Accent_Detection
    ```
 
 2. สร้างและเปิดใช้งาน virtual environment (แนะนำ):
@@ -59,7 +59,7 @@ Ujhin เป็นแอพพลิเคชันที่ใช้ปัญ�
    wget -O Model/cnn_tunning.h5 https://example.com/path/to/model
    ```
 
-   หรือดาวน์โหลดโมเดลจาก[ลิงก์นี้](https://drive.google.com/file/d/YOUR_MODEL_FILE_ID/view) แล้วเก็บไว้ในโฟลเดอร์ `Model` ภายใต้ชื่อ `cnn_tunning.h5`
+   หรือดาวน์โหลดโมเดลจาก[ลิงก์นี้](https://drive.google.com/file/d/1zoBqNyPzhjabG5OCa5cLAnIy-22iQaPQ/view?usp=sharing) แล้วเก็บไว้ในโฟลเดอร์ `Model` ภายใต้ชื่อ `cnn_tunning.h5`
 
 ## การใช้งาน
 
@@ -118,11 +118,6 @@ ujhin-accent-detection/
 - [Flask Documentation](https://flask.palletsprojects.com/)
 - [librosa Documentation](https://librosa.org/doc/latest/index.html)
 
-## ผู้พัฒนา
-
-พัฒนาโดย [Your Name]
-คณะ/ภาควิชา [Your Department]
-มหาวิทยาลัย [Your University]
 
 ## ลิขสิทธิ์
 
