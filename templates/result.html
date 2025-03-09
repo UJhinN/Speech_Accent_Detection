@@ -3,110 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accent Detection Results</title>
+    <title>Ujhin - ผลการวิเคราะห์สำเนียง</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #1a1a1a;
-            color: #ffffff;
-            min-height: 100vh;
+        :root {
+            --primary-color: #ff5252;
+            --primary-light: #ff7575;
+            --primary-dark: #cc4141;
+            --dark-bg: #1a1a1a;
+            --card-bg: #2a2a2a;
+            --card-accent: #3a3a3a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #aaaaaa;
+            --border-radius: 15px;
+            --shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            --transition: all 0.3s ease;
         }
+
+        body {
+            font-family: 'Prompt', 'Arial', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0;
+        }
+
         .container {
             max-width: 800px;
-            margin: 50px auto;
+            margin: 30px auto;
             padding: 30px;
-            background-color: #2a2a2a;
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
         }
+
         h1 {
-            color: #ffffff;
+            color: var(--text-primary);
             text-align: center;
             margin-bottom: 30px;
             font-weight: 700;
+            letter-spacing: 1px;
         }
+
         .logo {
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background-color: #ff5252;
+            background-color: var(--primary-color);
             margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
+
         .logo svg {
             width: 40px;
             height: 40px;
             fill: white;
         }
+
         .result-section {
             margin-bottom: 30px;
         }
+
         .chart-container {
             margin: 30px auto;
             max-width: 700px;
-            background-color: #3a3a3a;
+            background-color: var(--card-accent);
             padding: 20px;
-            border-radius: 10px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            overflow: hidden;
         }
+
         .results-table {
             width: 100%;
             margin-top: 20px;
-            background-color: #3a3a3a;
-            border-radius: 10px;
+            background-color: var(--card-accent);
+            border-radius: var(--border-radius);
             overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
+
         .results-table th {
-            background-color: #444;
-            color: #fff;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: var(--text-primary);
             padding: 12px;
+            text-align: center;
+            font-weight: 500;
         }
+
         .results-table td {
             padding: 12px;
-            border-top: 1px solid #444;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
         }
+
         .accent-name {
-            font-weight: bold;
-            color: #fff;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: left;
         }
-        .confidence-bar {
+
+        .confidence-bar-container {
+            width: 100%;
             height: 20px;
-            background-color: #ff5252;
-            border-radius: 3px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 30px;
+            overflow: hidden;
         }
+
+        .confidence-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 30px;
+            transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
         .confidence-value {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 12px 25px;
+            margin-top: 20px;
+            border-radius: 30px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: var(--transition);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .top-prediction {
+            background-color: var(--card-accent);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary-color);
+            animation: fadeIn 0.8s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .top-prediction::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(58, 58, 58, 0), rgba(58, 58, 58, 0.8));
+            pointer-events: none;
+        }
+
+        .top-prediction h4 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .top-accent {
+            color: var(--primary-color);
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: inline-block;
+            transform: translateY(0);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .error-message {
+            background-color: rgba(255, 82, 82, 0.1);
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .model-info {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            padding: 10px 15px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+        }
+
+        .model-info-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 1.1em;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .results-table tbody tr {
+            animation: fadeIn 0.5s ease-in-out;
+            animation-fill-mode: both;
+        }
+
+        .results-table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+        .results-table tbody tr:nth-child(2) { animation-delay: 0.2s; }
+        .results-table tbody tr:nth-child(3) { animation-delay: 0.3s; }
+        .results-table tbody tr:nth-child(4) { animation-delay: 0.4s; }
+        .results-table tbody tr:nth-child(5) { animation-delay: 0.5s; }
+        .results-table tbody tr:nth-child(6) { animation-delay: 0.6s; }
+
+        .trophy-icon {
+            display: inline-block;
+            margin-right: 5px;
+            font-size: 1.2em;
+            color: #FFD700;
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
             font-weight: bold;
+            font-size: 14px;
+        }
+
+        .rank-1 {
+            background-color: #FFD700; /* Gold */
+            color: #333;
+        }
+
+        .rank-2 {
+            background-color: #C0C0C0; /* Silver */
+            color: #333;
+        }
+
+        .rank-3 {
+            background-color: #CD7F32; /* Bronze */
             color: #fff;
         }
-        .btn-primary {
-            background-color: #ff5252;
-            border: none;
-            padding: 10px 20px;
-            margin-top: 20px;
-        }
-        .btn-primary:hover, .btn-primary:focus {
-            background-color: #ff3838;
-        }
-        .top-prediction {
-            background-color: #3a3a3a;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 30px;
-            border-left: 4px solid #ff5252;
-        }
-        .top-prediction h4 {
-            color: #ffffff;
-            margin-bottom: 15px;
-        }
-        .error-message {
-            background-color: #ff525233;
-            border-left: 4px solid #ff5252;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            .container {
+                padding: 20px;
+                margin: 10px auto;
+            }
+            
+            .results-table td, .results-table th {
+                padding: 10px 5px;
+                font-size: 14px;
+            }
+            
+            .confidence-bar-container {
+                height: 15px;
+            }
+            
+            .chart-container {
+                padding: 15px 10px;
+            }
+
+            .top-prediction {
+                padding: 20px;
+            }
+
+            .top-prediction h4 {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
@@ -118,36 +337,66 @@
             </svg>
         </div>
         
-        <h1>Accent Detection Results</h1>
+        <h1>ผลการวิเคราะห์สำเนียง</h1>
+        
+        {% if model_info and model_info.model_type %}
+        <div class="model-info-container">
+            <div class="model-info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cpu" viewBox="0 0 16 16" style="margin-right: 5px; vertical-align: -2px;">
+                    <path d="M5 0a.5.5 0 0 1 .5.5v2h1V.5a.5.5 0 0 1 1 0v2h1V.5a.5.5 0 0 1 1 0v2h1V.5a.5.5 0 0 1 1 0v2A2.5 2.5 0 0 1 14 5h2a.5.5 0 0 1 0 1h-2v1h2a.5.5 0 0 1 0 1h-2v1h2a.5.5 0 0 1 0 1h-2v1h2a.5.5 0 0 1 0 1h-2a2.5 2.5 0 0 1-2.5 2.5v2a.5.5 0 0 1-1 0v-2h-1v2a.5.5 0 0 1-1 0v-2h-1v2a.5.5 0 0 1-1 0v-2h-1v2a.5.5 0 0 1-1 0v-2A2.5 2.5 0 0 1 2 11H0a.5.5 0 0 1 0-1h2v-1H0a.5.5 0 0 1 0-1h2V7H0a.5.5 0 0 1 0-1h2V5H0a.5.5 0 0 1 0-1h2A2.5 2.5 0 0 1 4.5 2V0a.5.5 0 0 1 .5-.5zM5 4.5a.5.5 0 0 0-.5.5v2A.5.5 0 0 0 5 7.5h6a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5H5zM5 9a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 .5-.5v-1A.5.5 0 0 0 11 9H5z"/>
+                </svg>
+                วิเคราะห์โดยใช้โมเดล: {{ model_info.model_type }}
+            </div>
+        </div>
+        {% endif %}
         
         <div class="result-section">
             {% if results and results|length > 0 %}
-                <div class="top-prediction">
-                    <h4>Your accent is most likely: <span class="accent-name">{{ results[0].accent }}</span></h4>
-                    <p>Confidence: <span class="confidence-value">{{ "%.1f"|format(results[0].confidence) }}%</span></p>
+                <div class="top-prediction animate-in">
+                    <h4>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FFD700" class="bi bi-trophy" viewBox="0 0 16 16" style="margin-right: 8px; vertical-align: -3px;">
+                            <path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935z"/>
+                        </svg>
+                        สำเนียงของคุณมีความใกล้เคียงกับ: 
+                    </h4>
+                    <div class="top-accent">{{ results[0].accent }}</div>
+                    <p>ความเชื่อมั่น: <span class="confidence-value">{{ "%.1f"|format(results[0].confidence) }}%</span></p>
                 </div>
                 
-                <div class="chart-container">
+                <div class="chart-container animate-in">
+                    <div class="chart-title">สำเนียงที่มีความใกล้เคียงมากที่สุด 5 อันดับแรก</div>
                     <canvas id="accentChart"></canvas>
                 </div>
                 
                 <table class="table results-table">
                     <thead>
                         <tr>
-                            <th>Rank</th>
-                            <th>Accent</th>
-                            <th>Confidence</th>
-                            <th>Visualization</th>
+                            <th>อันดับ</th>
+                            <th>สำเนียง</th>
+                            <th>ความเชื่อมั่น</th>
+                            <th>แสดงผล</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for result in results %}
                         <tr>
-                            <td>{{ loop.index }}</td>
+                            <td>
+                                {% if loop.index == 1 %}
+                                    <span class="rank-badge rank-1">1</span>
+                                {% elif loop.index == 2 %}
+                                    <span class="rank-badge rank-2">2</span>
+                                {% elif loop.index == 3 %}
+                                    <span class="rank-badge rank-3">3</span>
+                                {% else %}
+                                    <span class="rank-badge">{{ loop.index }}</span>
+                                {% endif %}
+                            </td>
                             <td class="accent-name">{{ result.accent }}</td>
                             <td class="confidence-value">{{ "%.1f"|format(result.confidence) }}%</td>
                             <td>
-                                <div class="confidence-bar" style="width: {{ result.confidence }}%"></div>
+                                <div class="confidence-bar-container">
+                                    <div class="confidence-bar" style="width: 0%;" data-width="{{ result.confidence }}%"></div>
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
@@ -155,20 +404,39 @@
                 </table>
             {% else %}
                 <div class="error-message">
-                    <h4>No Results Available</h4>
-                    <p>There was a problem processing your audio file. Please try again with a different recording.</p>
+                    <h4>ไม่พบผลลัพธ์</h4>
+                    <p>เกิดปัญหาในการประมวลผลไฟล์เสียงของคุณ กรุณาลองบันทึกใหม่อีกครั้ง</p>
                 </div>
             {% endif %}
             
             <div class="text-center">
-                <a href="/" class="btn btn-primary">Try Another Recording</a>
+                <a href="/" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16" style="margin-right: 5px; vertical-align: -3px;">
+                        <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0v5zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3z"/>
+                    </svg>
+                    ลองบันทึกใหม่อีกครั้ง
+                </a>
             </div>
+        </div>
+        
+        <div class="footer">
+            &copy; 2025 Ujhin - Speech Accent Detection
         </div>
     </div>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             try {
+                // Animate confidence bars with a slight delay for better visual effect
+                setTimeout(() => {
+                    document.querySelectorAll('.confidence-bar').forEach((bar, index) => {
+                        setTimeout(() => {
+                            bar.style.width = bar.dataset.width;
+                        }, index * 100); // Stagger animation
+                    });
+                }, 500);
+                
                 // Check if Chart.js is loaded
                 if (typeof Chart === 'undefined') {
                     console.error('Chart.js library not loaded');
@@ -190,71 +458,83 @@
                     ];
                     
                     const backgroundColors = [
-                        '#ff5252',
-                        '#ff7b7b',
-                        '#ff9e9e',
-                        '#ffc0c0',
-                        '#ffe0e0'
+                        '#ff5252',  // Primary color
+                        '#ff7575',  // Slightly lighter
+                        '#ff9e9e',  // Even lighter
+                        '#ffc0c0',  // Very light
+                        '#ffe0e0'   // Almost white
                     ];
                     
                     // Create Chart
                     const ctx = document.getElementById('accentChart').getContext('2d');
+                    Chart.defaults.color = '#cccccc';
+                    
                     const accentChart = new Chart(ctx, {
                         type: 'bar',
                         data: {
                             labels: labels,
                             datasets: [{
-                                label: 'Confidence (%)',
+                                label: 'ความเชื่อมั่น (%)',
                                 data: data,
                                 backgroundColor: backgroundColors,
-                                borderColor: backgroundColors.map(color => color),
-                                borderWidth: 1
+                                borderColor: 'transparent',
+                                borderWidth: 0,
+                                borderRadius: 10,
+                                barThickness: 30,
+                                maxBarThickness: 40
                             }]
                         },
                         options: {
                             responsive: true,
+                            maintainAspectRatio: true,
+                            animation: {
+                                duration: 2000,
+                                easing: 'easeOutQuart',
+                                delay: (context) => {
+                                    return context.dataIndex * 150;
+                                }
+                            },
                             scales: {
                                 y: {
                                     beginAtZero: true,
                                     max: 100,
-                                    title: {
-                                        display: true,
-                                        text: 'Confidence (%)',
-                                        color: '#cccccc'
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.1)'
                                     },
                                     ticks: {
-                                        color: '#cccccc'
-                                    },
-                                    grid: {
-                                        color: '#444444'
+                                        font: {
+                                            family: "'Prompt', sans-serif"
+                                        }
                                     }
                                 },
                                 x: {
-                                    title: {
-                                        display: true,
-                                        text: 'Accent',
-                                        color: '#cccccc'
+                                    grid: {
+                                        display: false
                                     },
                                     ticks: {
-                                        color: '#cccccc'
-                                    },
-                                    grid: {
-                                        color: '#444444'
+                                        font: {
+                                            family: "'Prompt', sans-serif"
+                                        }
                                     }
                                 }
                             },
                             plugins: {
-                                title: {
-                                    display: true,
-                                    text: 'Top 5 Predicted Accents',
-                                    color: '#ffffff',
-                                    font: {
-                                        size: 16,
-                                        weight: 'bold'
-                                    }
-                                },
                                 legend: {
                                     display: false
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                    bodyFont: {
+                                        family: "'Prompt', sans-serif"
+                                    },
+                                    titleFont: {
+                                        family: "'Prompt', sans-serif"
+                                    },
+                                    callbacks: {
+                                        label: function(context) {
+                                            return 'ความเชื่อมั่น: ' + context.parsed.y.toFixed(1) + '%';
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -263,7 +543,7 @@
                     console.warn('No results available for chart');
                     const chartContainer = document.querySelector('.chart-container');
                     if (chartContainer) {
-                        chartContainer.innerHTML = '<p class="text-center">No chart data available</p>';
+                        chartContainer.innerHTML = '<p class="text-center">ไม่มีข้อมูลสำหรับแผนภูมิ</p>';
                     }
                 {% endif %}
             } catch (error) {
