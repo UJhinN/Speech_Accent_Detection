@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ujhin - ผลการวิเคราะห์สำเนียง</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #ff5252;
+            --primary-light: #ff7575;
+            --primary-dark: #cc4141;
+            --dark-bg: #1a1a1a;
+            --card-bg: #2a2a2a;
+            --card-accent: #3a3a3a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #aaaaaa;
+            --border-radius: 15px;
+            --shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Prompt', 'Arial', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+        }
+
+        h1 {
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        .result-section {
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            margin: 30px auto;
+            max-width: 700px;
+            background-color: var(--card-accent);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .results-table {
+            width: 100%;
+            margin-top: 20px;
+            background-color: var(--card-accent);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .results-table th {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: var(--text-primary);
+            padding: 12px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .results-table td {
+            padding: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+
+        .accent-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: left;
+            font-size: 16px;
+        }
+
+        .confidence-bar-container {
+            width: 100%;
+            height: 24px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        .confidence-bar {
+            height: 100%;
+            border-radius: 30px;
+            transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* สีแถบตามอันดับ */
+        tr:nth-child(1) .confidence-bar {
+            background-color: #ff5252; /* สีหลัก */
+        }
+
+        tr:nth-child(2) .confidence-bar {
+            background-color: #ff7575; /* สีอ่อนกว่า */
+        }
+
+        tr:nth-child(3) .confidence-bar {
+            background-color: #ff9e9e; /* สีอ่อนมาก */
+        }
+
+        tr:nth-child(n+4) .confidence-bar {
+            background-color: #ffbdbd; /* สีอ่อนมากๆ สำหรับอันดับอื่นๆ */
+        }
+
+        .confidence-value {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 12px 25px;
+            margin-top: 20px;
+            border-radius: 30px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: var(--transition);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .top-prediction {
+            background-color: var(--card-accent);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 6px solid var(--primary-color);
+            animation: fadeIn 0.8s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .top-prediction::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(58, 58, 58, 0), rgba(58, 58, 58, 0.8));
+            pointer-events: none;
+        }
+
+        .top-prediction h4 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .top-accent {
+            color: var(--primary-color);
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: inline-block;
+            transform: translateY(0);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .error-message {
+            background-color: rgba(255, 82, 82, 0.1);
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .model-info {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            padding: 10px 15px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+        }
+
+        .model-info-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 1.1em;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .audio-file-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: var(--card-accent);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+
+        .audio-file-info i {
+            font-size: 2em;
+            color: var(--primary-color);
+        }
+
+        .audio-file-info audio {
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .results-table tbody tr {
+            animation: fadeIn 0.5s ease-in-out;
+            animation-fill-mode: both;
+        }
+
+        .results-table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+        .results-table tbody tr:nth-child(2) { animation-delay: 0.2s; }
+        .results-table tbody tr:nth-child(3) { animation-delay: 0.3s; }
+        .results-table tbody tr:nth-child(4) { animation-delay: 0.4s; }
+        .results-table tbody tr:nth-child(5) { animation-delay: 0.5s; }
+        .results-table tbody tr:nth-child(6) { animation-delay: 0.6s; }
+
+        .trophy-icon {
+            display: inline-block;
+            margin-right: 5px;
+            font-size: 1.2em;
+            color: #FFD700;
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .rank-1 {
+            background-color: #FFD700; /* Gold */
+            color: #333;
+        }
+
+        .rank-2 {
+            background-color: #C0C0C0; /* Silver */
+            color: #333;
+        }
+
+        .rank-3 {
+            background-color: #CD7F32; /* Bronze */
+            color: #fff;
+        }
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            .container {
+                padding: 20px;
+                margin: 10px auto;
+            }
+            
+            .results-table td, .results-table th {
+                padding: 10px 5px;
+                font-size: 14px;
+            }
+            
+            .confidence-bar-container {
+                height: 15px;
+            }
+            
+            .chart-container {
+                padding: 15px 10px;
+            }
+
+            .top-prediction {
+                padding: 20px;
+            }
+
+            .top-prediction h4 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 1c-5 0-9 4-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-5-4.03-9-9-9z"/>
+            </svg>
+        </div>
+        
+        <h1>ผลการวิเคราะห์สำเนียง</h1>
+        
+        <div class="result-section">
+            {% if error %}
+            <!-- แสดงข้อผิดพลาด -->
+            <div class="error-message">
+                <h4><i class="fas fa-exclamation-triangle me-2"></i> เกิดข้อผิดพลาด</h4>
+                <p>{{ error }}</p>
+            </div>
+            
+            <div class="text-center">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i> กลับสู่หน้าหลัก
+                </a>
+            </div>
+            {% elif predictions and predictions|length > 0 %}
+                <!-- แสดงข้อมูลไฟล์เสียง (ซ่อนไว้) -->
+                <div class="audio-file-info" style="display: none;">
+                    <i class="fas fa-music"></i>
+                    <div style="width: 100%;">
+                        <p class="mb-1 fw-bold">{{ filename or "ไม่ระบุชื่อไฟล์" }}</p>
+                        {% if audio_path %}
+                        <audio src="{{ audio_path }}" controls style="width: 100%;"></audio>
+                        {% else %}
+                        <p class="text-muted">ไม่พบไฟล์เสียง</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- ผลการทำนายอันดับหนึ่ง -->
+                <div class="top-prediction animate-in">
+                    <h4>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FFD700" class="bi bi-trophy" viewBox="0 0 16 16" style="margin-right: 8px; vertical-align: -3px;">
+                            <path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935z"/>
+                        </svg>
+                        สำเนียงของคุณมีความใกล้เคียงกับ: 
+                    </h4>
+                    <div class="top-accent">{{ predictions[0].accent }}</div>
+                    <p>ความเชื่อมั่น: <span class="confidence-value">{{ "%.1f"|format(predictions[0].confidence) }}%</span></p>
+                </div>
+                
+                <!-- แผนภูมิแสดงผล -->
+                <div class="chart-container animate-in">
+                    <div class="chart-title">สำเนียงที่มีความใกล้เคียงมากที่สุด</div>
+                    <!-- <canvas id="accentChart" style="height: 350px;"></canvas> -->
+                </div>
+                
+                <!-- ตารางผลลัพธ์ -->
+                <table class="table results-table">
+                    <thead>
+                        <tr>
+                            <th>อันดับ</th>
+                            <th>สำเนียง</th>
+                            <th>ความเชื่อมั่น</th>
+                            <th>แสดงผล</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prediction in predictions %}
+                        <tr>
+                            <td>
+                                {% if loop.index == 1 %}
+                                    <span class="rank-badge rank-1">1</span>
+                                {% elif loop.index == 2 %}
+                                    <span class="rank-badge rank-2">2</span>
+                                {% elif loop.index == 3 %}
+                                    <span class="rank-badge rank-3">3</span>
+                                {% else %}
+                                    <span class="rank-badge">{{ loop.index }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="accent-name">{{ prediction.accent }}</td>
+                            <td class="confidence-value">{{ "%.1f"|format(prediction.confidence) }}%</td>
+                            <td>
+                                <div class="confidence-bar-container">
+                                    <div class="confidence-bar" style="width: 0%;" data-width="{{ prediction.confidence }}%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <!-- แสดงข้อความกรณีไม่มีผลลัพธ์ -->
+                <div class="error-message">
+                    <h4>ไม่พบผลลัพธ์</h4>
+                    <p>เกิดปัญหาในการประมวลผลไฟล์เสียงของคุณ กรุณาลองบันทึกใหม่อีกครั้ง</p>
+                </div>
+            {% endif %}
+            
+            <div class="text-center">
+                <a href="/" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16" style="margin-right: 5px; vertical-align: -3px;">
+                        <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0v5zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3z"/>
+                    </svg>
+                    ลองบันทึกใหม่อีกครั้ง
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            &copy; 2025 Ujhin - Speech Accent Detection
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Animate confidence bars with a slight delay for better visual effect
+                setTimeout(() => {
+                    document.querySelectorAll('.confidence-bar').forEach((bar, index) => {
+                        const value = parseFloat(bar.dataset.width);
+                        // ถ้าค่าน้อยกว่า 5% ให้แสดงอย่างน้อย 5% เพื่อให้มองเห็นได้
+                        const displayWidth = (value < 5) ? '5%' : bar.dataset.width;
+                        setTimeout(() => {
+                            bar.style.width = displayWidth;
+                        }, index * 150); // เพิ่มการหน่วงเวลาให้มากขึ้น
+                    });
+                }, 500);
+                
+                // Check if Chart.js is loaded
+                if (typeof Chart === 'undefined') {
+                    console.error('Chart.js library not loaded');
+                    return;
+                }
+                
+                {% if predictions and predictions|length > 0 %}
+                    // Prepare data for Chart.js
+                    const labels = [
+                        {% for prediction in predictions[:5] %}
+                            "{{ prediction.accent }}"{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                    ];
+                    
+                    const data = [
+                        {% for prediction in predictions[:5] %}
+                            {{ prediction.confidence }}{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                    ];
+                    
+                    const backgroundColors = [
+                        '#ff5252',  // Primary color
+                        '#ff7575',  // Slightly lighter
+                        '#ff9e9e',  // Even lighter
+                        '#ffc0c0',  // Very light
+                        '#ffe0e0'   // Almost white
+                    ];
+                    
+                    // Create Chart
+                    const ctx = document.getElementById('accentChart').getContext('2d');
+                    Chart.defaults.color = '#cccccc';
+                    
+                    const accentChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'ความเชื่อมั่น (%)',
+                                data: data,
+                                backgroundColor: backgroundColors,
+                                borderColor: 'transparent',
+                                borderWidth: 0,
+                                borderRadius: 10,
+                                barThickness: 40,  // เพิ่มความหนาของแท่ง
+                                maxBarThickness: 60  // เพิ่มความหนาสูงสุด
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,  // แก้เป็น false เพื่อให้ปรับขนาดตามความสูงที่กำหนด
+                            animation: {
+                                duration: 2000,
+                                easing: 'easeOutQuart',
+                                delay: (context) => {
+                                    return context.dataIndex * 150;
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100,  // ตั้งค่าสูงสุดเป็น 100 เสมอ
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.1)'
+                                    },
+                                    ticks: {
+                                        font: {
+                                            family: "'Prompt', sans-serif",
+                                            size: 14  // เพิ่มขนาดตัวอักษร
+                                        }
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        display: false
+                                    },
+                                    ticks: {
+                                        font: {
+                                            family: "'Prompt', sans-serif",
+                                            size: 14  // เพิ่มขนาดตัวอักษร
+                                        }
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                    bodyFont: {
+                                        family: "'Prompt', sans-serif",
+                                        size: 14
+                                    },
+                                    titleFont: {
+                                        family: "'Prompt', sans-serif",
+                                        size: 16
+                                    },
+                                    callbacks: {
+                                        label: function(context) {
+                                            return 'ความเชื่อมั่น: ' + context.parsed.y.toFixed(1) + '%';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                {% else %}
+                    console.warn('No results available for chart');
+                    const chartContainer = document.querySelector('.chart-container');
+                    if (chartContainer) {
+                        chartContainer.style.display = 'none';
+                    }
+                {% endif %}
+            } catch (error) {
+                console.error('Error creating chart:', error);
+            }
+        });
+    </script>
+</body>
+</html>
