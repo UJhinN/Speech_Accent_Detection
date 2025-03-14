@@ -396,7 +396,7 @@
             </div>
             {% elif predictions and predictions|length > 0 %}
                 <!-- แสดงข้อมูลไฟล์เสียง (ซ่อนไว้) -->
-                <div class="audio-file-info" style="display: none;">
+                <div class="audio-file-info">
                     <i class="fas fa-music"></i>
                     <div style="width: 100%;">
                         <p class="mb-1 fw-bold">{{ filename or "ไม่ระบุชื่อไฟล์" }}</p>
@@ -421,10 +421,10 @@
                 </div>
                 
                 <!-- แผนภูมิแสดงผล -->
-                <div class="chart-container animate-in">
+                <!-- <div class="chart-container animate-in">
                     <div class="chart-title">สำเนียงที่มีความใกล้เคียงมากที่สุด</div>
-                    <!-- <canvas id="accentChart" style="height: 350px;"></canvas> -->
-                </div>
+                    <canvas id="accentChart" style="height: 350px;"></canvas>
+                </div> -->
                 
                 <!-- ตารางผลลัพธ์ -->
                 <table class="table results-table">
