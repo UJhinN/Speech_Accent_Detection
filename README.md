@@ -120,7 +120,7 @@
 
 5. รันแอปพลิเคชัน:
    ```bash
-   http://<host>:8000
+   uvicorn main:app --reload --host 0.0.0.0 --port 8000
    ```
 
 6. เข้าถึงเว็บอินเทอร์เฟซที่ `http://localhost:8000`
