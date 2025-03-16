@@ -10,6 +10,146 @@
     <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* Animation พื้นหลัง - ใช้แค่ CSS */
+body {
+    position: relative;
+    overflow-x: hidden;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(255, 82, 82, 0.2) 0%, transparent 30%),
+        radial-gradient(circle at 80% 70%, rgba(80, 80, 100, 0.3) 0%, transparent 40%),
+        linear-gradient(45deg, rgba(0, 0, 0, 0.9) 0%, var(--dark-bg) 100%);
+    background-attachment: fixed;
+}
+
+        /* เพิ่ม overlay พื้นหลังที่เคลื่อนไหวได้ */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                45deg,
+                rgba(255, 82, 82, 0.35) 0%,
+                rgba(0, 0, 0, 0) 40%,
+                rgba(80, 80, 100, 0.35) 50%,
+                rgba(0, 0, 0, 0) 80%,
+                rgba(255, 82, 82, 0.2) 100%
+            );
+            background-size: 350% 350%;
+            z-index: -2;
+            animation: gradientMove 15s ease infinite;
+            transform-origin: center;
+            opacity: 0.8;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; transform: scale(1.2); }
+            50% { background-position: 100% 50%; transform: scale(1.4); }
+            100% { background-position: 0% 50%; transform: scale(1.2); }
+        }
+
+        /* เพิ่ม particles แบบ pseudo-element */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 1%),
+                radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 1%),
+                radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 1%),
+                radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 1%),
+                radial-gradient(circle at 20% 60%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 1%),
+                radial-gradient(circle at 90% 90%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 1%),
+                radial-gradient(circle at 60% 10%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 1%),
+                radial-gradient(circle at 10% 40%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 1%);
+            background-size: 150% 150%;
+            z-index: -1;
+            opacity: 0.5;
+            animation: sparkleMove 20s linear infinite;
+        }
+
+        @keyframes sparkleMove {
+            0% { background-position: 0% 0%; }
+            25% { background-position: 25% 25%; }
+            50% { background-position: 50% 50%; }
+            75% { background-position: 75% 75%; }
+            100% { background-position: 0% 0%; }
+        }
+
+        /* เพิ่ม pulse circle แบบ fixed position */
+        .pulse-circle {
+            position: fixed;
+            border-radius: 50%;
+            background-color: rgba(255, 82, 82, 0.2);
+            box-shadow: 0 0 50px rgba(255, 82, 82, 0.3);
+            z-index: -1;
+            animation: pulse-animation 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .pulse-circle-1 {
+            width: 600px;
+            height: 600px;
+            top: -200px;
+            right: -100px;
+        }
+
+        .pulse-circle-2 {
+            width: 500px;
+            height: 500px;
+            bottom: -100px;
+            left: -150px;
+            animation-delay: 2s;
+        }
+
+        .pulse-circle-3 {
+            width: 400px;
+            height: 400px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: 4s;
+        }
+
+        @keyframes pulse-animation {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 0.3; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+
+        /* ปรับ container ให้มี backdrop filter */
+        .container {
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(5px);
+            background-color: rgba(42, 42, 42, 0.85); /* เพิ่มความโปร่งใสเล็กน้อย */
+        }
+
+        /* เพิ่ม glowing effect รอบๆ container */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, rgba(255, 82, 82, 0), rgba(255, 82, 82, 0.3), rgba(255, 82, 82, 0));
+            z-index: -1;
+            border-radius: calc(var(--border-radius) + 5px);
+            animation: glowing 2s ease-in-out infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes glowing {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+            100% { opacity: 0.3; }
+        }
         :root {
             --primary-color: #ff5252;
             --primary-light: #ff7575;
@@ -372,6 +512,16 @@
     </style>
 </head>
 <body>
+    <div class="wave-container">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+
+    <!-- เพิ่ม pulse circles -->
+    <div class="pulse-circle pulse-circle-1"></div>
+    <div class="pulse-circle pulse-circle-2"></div>
+    <div class="pulse-circle pulse-circle-3"></div>
     <div class="container">
         <div class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
