@@ -12,7 +12,7 @@ from audio_processor import extract_advanced_features
 # กำหนดพาธไฟล์แบบถูกต้อง (แก้ไขใหม่)
 BASE_DIR = Path(__file__).resolve().parent  # คือโฟลเดอร์ app
 MODEL_DIR = BASE_DIR / "models"  # ไม่ต้องใช้ parent เพราะโฟลเดอร์ models อยู่ใน app โดยตรง
-MODEL_PATH = MODEL_DIR / "accent_cnn_rnn_model.h5"
+MODEL_PATH = MODEL_DIR / "accent_ensemble_model_2.h5"
 LABEL_ENCODER_PATH = MODEL_DIR / "label_encoder.pkl"
 
 # เพิ่มการตรวจสอบไฟล์เริ่มต้น
